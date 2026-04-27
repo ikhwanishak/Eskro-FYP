@@ -232,6 +232,7 @@ export default function Dashboard() {
                         <div className="bg-white rounded-xl shadow-xl overflow-hidden border border-gray-100">
                             <ul className="divide-y divide-gray-100">
                                 {transactions.slice(0, 5).map((tx) => {
+                                    const itemName = tx.item;
                                     const style = getStatusStyles(tx.status);
                                     const isCreator = tx.creatorEmail === user.email;
                                     const myRole = isCreator ? tx.role : (tx.role === 'buyer' ? 'seller' : 'buyer');
