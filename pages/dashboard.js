@@ -233,9 +233,11 @@ export default function Dashboard() {
                             <ul className="divide-y divide-gray-100">
                                 {transactions.slice(0, 5).map((tx) => {
                                     const style = getStatusStyles(tx.status);
-                                    // Map API data to UI fields
-                                    const itemName = tx.item;
-                                    const partyName = tx.creatorEmail === user.email ? `To: ${tx.targetEmail}` : `From: ${tx.creatorEmail}`;
+                                    const isCreator = tx.creatorEmail === user.email;
+                                    const myRole = isCreator ? tx.role : (tx.role === 'buyer' ? 'seller' : 'buyer');
+                                    const otherParty = isCreator ? `To: ${tx.targetEmail}` : `From: ${tx.creatorEmail}`;
+                                    const roleBadgeClass = myRole === 'buyer' ? 'bg-purple-100 text-purple-700' : 'bg-orange-100 text-orange-700';
+                                    const roleText = myRole === 'buyer' ? 'You: Buyer' : 'You: Seller';
 
                                     return (
                                         <Link key={tx.id} href={`/transaction/${tx.id}`} className="block no-underline">
@@ -244,7 +246,12 @@ export default function Dashboard() {
                                                     <span className={`text-3xl ${style.iconColor}`}>{style.icon}</span>
                                                     <div>
                                                         <p className="text-lg font-semibold text-gray-800">{itemName}</p>
-                                                        <p className="text-sm text-gray-500">{partyName}</p>
+                                                        <div className="flex items-center mt-1 space-x-2">
+                                                            <p className="text-sm text-gray-500">{otherParty}</p>
+                                                            <span className={`px-2 py-0.5 rounded text-[10px] font-bold tracking-wide uppercase ${roleBadgeClass}`}>
+                                                                {roleText}
+                                                            </span>
+                                                        </div>
                                                     </div>
                                                 </div>
                                                 <div className="text-right">
