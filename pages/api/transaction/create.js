@@ -12,8 +12,10 @@ export default withIronSessionApiRoute(async function handler(req, res) {
 
     const { item, amount, role, targetEmail } = req.body;
 
-    // Validation
-    if (!item || !amount || !role || !targetEmail) {
+    // Validation & Basic Sanitization (Cybersecurity: Prevent XSS)
+    const sanitizedItem = item ? item.replace(/</g, "&lt;").replace(/>/g, "&gt;") : '';
+
+    if (!sanitizedItem || !amount || !role || !targetEmail) {
         return res.status(400).json({ error: 'All fields are required' });
     }
 
@@ -39,7 +41,7 @@ export default withIronSessionApiRoute(async function handler(req, res) {
     try {
         const transaction = await prisma.transaction.create({
             data: {
-                item,
+                item: sanitizedItem,
                 amount: amountFloat,
                 fee,
                 role, // Role of the creator (buyer or seller)

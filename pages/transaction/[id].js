@@ -72,6 +72,31 @@ export default function TransactionDetails() {
         }
     };
 
+    const handleAction = async (actionType) => {
+        setPayLoading(true); // Reusing this loading state for simplicity
+        setError('');
+        try {
+            const res = await fetch('/api/transaction/action', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    transactionId: transaction.id,
+                    action: actionType
+                }),
+            });
+            const data = await res.json();
+            if (!res.ok) throw new Error(data.error || 'Action failed');
+            
+            // Update local state to reflect new status
+            setTransaction(data);
+        } catch (err) {
+            console.error(err);
+            setError(err.message);
+        } finally {
+            setPayLoading(false);
+        }
+    };
+
     if (userLoading || loading) {
         return <Layout><div className="text-center mt-10">Loading...</div></Layout>;
     }
@@ -83,6 +108,94 @@ export default function TransactionDetails() {
     // Determine Role Logic
     const isCreator = user.email === transaction.creatorEmail;
     const isBuyer = (transaction.role === 'buyer' && isCreator) || (transaction.role === 'seller' && !isCreator);
+
+    // Dynamic UI rendering based on status
+    const renderActionSection = () => {
+        if (transaction.status === 'pending') {
+            return (
+                <div className="space-y-4">
+                    {isBuyer && (
+                        <Button
+                            className="w-full btn-accent"
+                            onClick={handlePay}
+                            isLoading={payLoading}
+                        >
+                            Pay Now (RM {(transaction.amount + transaction.fee).toFixed(2)})
+                        </Button>
+                    )}
+                    <Button 
+                        variant="secondary" 
+                        className="w-full"
+                        onClick={() => handleAction('cancel')}
+                        isLoading={payLoading}
+                    >
+                        Cancel Transaction
+                    </Button>
+                </div>
+            );
+        }
+
+        if (transaction.status === 'paid') {
+            if (isBuyer) {
+                return (
+                    <div className="space-y-4 border border-blue-200 bg-blue-50 p-6 rounded-lg">
+                        <p className="text-sm font-semibold text-blue-900 mb-2">
+                            📦 Has the item arrived?
+                        </p>
+                        <p className="text-sm text-blue-800 mb-4">
+                            Please confirm receipt only when you have received and verified the item. This will release the funds securely to the seller.
+                        </p>
+                        <Button
+                            className="w-full bg-green-600 hover:bg-green-700 text-white border-none"
+                            onClick={() => {
+                                if(confirm('Are you sure you want to release the funds? This action cannot be undone.')) {
+                                    handleAction('release');
+                                }
+                            }}
+                            isLoading={payLoading}
+                        >
+                            Confirm Receipt & Release Funds
+                        </Button>
+                    </div>
+                );
+            } else {
+                return (
+                    <div className="border border-yellow-200 bg-yellow-50 p-6 rounded-lg text-center">
+                        <p className="text-sm font-semibold text-yellow-900 mb-2">
+                            💰 Payment secured in Escrow
+                        </p>
+                        <p className="text-sm text-yellow-800">
+                            Please ship or deliver the item. We are waiting for the buyer to confirm receipt before releasing the funds to you.
+                        </p>
+                    </div>
+                );
+            }
+        }
+
+        if (transaction.status === 'completed') {
+            return (
+                <div className="bg-green-50 border border-green-200 p-6 rounded-lg text-center">
+                    <p className="font-bold text-green-800 text-lg mb-1">✅ Transaction Complete</p>
+                    <p className="text-sm text-green-700">Funds have been successfully released to the seller.</p>
+                </div>
+            );
+        }
+
+        if (transaction.status === 'canceled') {
+            return (
+                <div className="bg-red-50 border border-red-200 p-6 rounded-lg text-center">
+                    <p className="font-bold text-red-800 text-lg mb-1">❌ Transaction Canceled</p>
+                    <p className="text-sm text-red-700">This transaction has been voided.</p>
+                </div>
+            );
+        }
+
+        return (
+            <div className="text-center text-muted bg-gray-50 p-4 rounded-md">
+                No action required at this moment.
+            </div>
+        );
+    };
 
     return (
         <Layout title={`Transaction #${transaction.id.slice(0, 8)}`}>
@@ -105,8 +218,12 @@ export default function TransactionDetails() {
                         </div>
                         <div className="text-right">
                             <label className="label text-sm text-muted">Status</label>
-                            <Badge variant={transaction.status === 'paid' ? 'green' : 'yellow'}>
-                                {transaction.status === 'paid' ? 'Paid' : 'Pending Payment'}
+                            <Badge variant={
+                                transaction.status === 'completed' ? 'green' : 
+                                transaction.status === 'paid' ? 'blue' : 
+                                transaction.status === 'canceled' ? 'red' : 'yellow'
+                            }>
+                                {transaction.status.toUpperCase()}
                             </Badge>
                         </div>
                     </div>
@@ -125,19 +242,7 @@ export default function TransactionDetails() {
                             </div>
                         )}
 
-                        {isBuyer && transaction.status === 'pending' ? (
-                            <Button
-                                className="w-full btn-accent"
-                                onClick={handlePay}
-                                isLoading={payLoading}
-                            >
-                                Pay Now (RM {(transaction.amount + transaction.fee).toFixed(2)})
-                            </Button>
-                        ) : (
-                            <div className="text-center text-muted bg-gray-50 p-4 rounded-md">
-                                No action required at this moment.
-                            </div>
-                        )}
+                        {renderActionSection()}
                     </div>
                 </Card>
             </div>
