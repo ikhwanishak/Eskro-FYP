@@ -17,41 +17,45 @@ export default function Header() {
     };
 
     return (
-        <header className="header container" style={{ borderBottom: '1px solid var(--color-border)', padding: '1rem 1rem' }}>
-            <div className="logo">
-                <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', textDecoration: 'none' }}>
+        <header className="header container flex items-center justify-between px-4 py-4 sm:px-6" style={{ borderBottom: '1px solid var(--color-border)' }}>
+            <div className="logo flex-shrink-0">
+                <Link href="/" className="flex items-center gap-2 no-underline text-xl font-bold text-gray-800">
                     EscrowSecure
                 </Link>
             </div>
 
-            <nav style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+            <nav className="flex items-center gap-3 sm:gap-6">
                 {user ? (
                     <>
-                        <Link href="/dashboard" style={{ fontSize: '0.9rem', fontWeight: 500 }}>
+                        <Link href="/dashboard" className="text-xs sm:text-sm font-semibold text-gray-600 hover:text-blue-600 no-underline">
                             Dashboard
                         </Link>
-                        <Link href="/transaction/create" style={{ fontSize: '0.9rem', fontWeight: 500 }}>
-                            New Transaction
+                        <Link href="/transaction/create" className="text-xs sm:text-sm font-semibold text-gray-600 hover:text-blue-600 no-underline">
+                            New
                         </Link>
-                        {/* Conditional Admin Link */}
                         {user.isAdmin && (
-                            <Link href="/admin/dashboard" style={{ fontSize: '0.9rem', fontWeight: 500, color: '#dc2626' }}>
-                                Admin Panel
+                            <Link href="/admin/dashboard" className="text-xs sm:text-sm font-semibold text-red-600 hover:text-red-800 no-underline">
+                                Admin
                             </Link>
                         )}
 
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginLeft: '1rem' }}>
-                            <span className="text-muted" style={{ fontSize: '0.9rem' }}>{user.email}</span>
-                            <Button variant="outline" onClick={handleLogout} style={{ padding: '0.25rem 0.75rem', fontSize: '0.875rem' }}>Logout</Button>
+                        <div className="flex items-center gap-2 ml-2">
+                            <span className="hidden lg:block text-xs text-gray-400 font-medium">{user.email}</span>
+                            <button 
+                                onClick={handleLogout}
+                                className="text-[10px] sm:text-xs font-bold px-2 py-1 sm:px-3 sm:py-1.5 border border-gray-200 rounded-lg text-gray-600 hover:bg-gray-50"
+                            >
+                                Logout
+                            </button>
                         </div>
                     </>
                 ) : (
                     <>
-                        <Link href="/login" style={{ fontSize: '0.9rem', fontWeight: 'bold', color: '#4b5563', padding: '0.5rem 1rem' }}>
+                        <Link href="/login" className="text-sm font-bold text-gray-600 hover:text-gray-800 no-underline px-4 py-2">
                             Login
                         </Link>
                         <Link href="/register">
-                            <Button variant="primary">Get Started</Button>
+                            <Button variant="primary" className="text-sm">Get Started</Button>
                         </Link>
                     </>
                 )}

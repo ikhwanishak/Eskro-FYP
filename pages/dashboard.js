@@ -298,9 +298,9 @@ export default function Dashboard() {
                     </div>
 
                     {/* Transaction Section */}
-                    <div className="flex items-center justify-between mb-6">
-                        <h2 className="text-3xl font-bold text-gray-800">My Transactions</h2>
-                        <Link href="/transaction/create" className="bg-blue-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-blue-700 transition duration-150 shadow-md flex items-center space-x-1 no-underline">
+                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
+                        <h2 className="text-2xl sm:text-3xl font-bold text-gray-800">My Transactions</h2>
+                        <Link href="/transaction/create" className="w-full sm:w-auto bg-blue-600 text-white px-4 py-2.5 rounded-xl font-bold hover:bg-blue-700 transition duration-150 shadow-md flex items-center justify-center space-x-2 no-underline text-sm">
                             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4" /></svg>
                             <span>New Transaction</span>
                         </Link>
@@ -327,28 +327,28 @@ export default function Dashboard() {
                                     const otherParty = isCreator ? `To: ${tx.targetEmail}` : `From: ${tx.creatorEmail}`;
                                     const roleBadgeClass = myRole === 'buyer' ? 'bg-purple-100 text-purple-700' : 'bg-orange-100 text-orange-700';
                                     return (
-                                        <Link key={tx.id} href={`/transaction/${tx.id}`} className="block no-underline">
-                                            <li className={`p-4 sm:p-6 hover:bg-blue-50 transition duration-150 cursor-pointer flex items-center justify-between space-x-4 ${tx.status === 'canceled' ? 'opacity-70' : ''}`}>
-                                                <div className="flex items-center space-x-4">
-                                                    <span className={`text-3xl ${style.iconColor}`}>{style.icon}</span>
-                                                    <div>
-                                                        <p className="text-lg font-semibold text-gray-800">{tx.item}</p>
-                                                        <div className="flex items-center mt-1 space-x-2">
-                                                            <p className="text-sm text-gray-500">{otherParty}</p>
-                                                            <span className={`px-2 py-0.5 rounded text-[10px] font-bold tracking-wide uppercase ${roleBadgeClass}`}>
+                                        <Link key={tx.id} href={`/transaction/${tx.id}`} className="block no-underline group">
+                                            <li className={`p-5 sm:p-6 hover:bg-blue-50/50 transition duration-150 cursor-pointer flex flex-col sm:flex-row sm:items-center justify-between gap-4 ${tx.status === 'canceled' ? 'opacity-70' : ''}`}>
+                                                <div className="flex items-start sm:items-center space-x-4">
+                                                    <span className={`text-3xl sm:text-4xl ${style.iconColor} p-2 bg-gray-50 rounded-xl group-hover:bg-white transition-colors`}>{style.icon}</span>
+                                                    <div className="min-w-0 flex-1">
+                                                        <p className="text-base sm:text-lg font-bold text-gray-900 truncate">{tx.item}</p>
+                                                        <div className="flex flex-wrap items-center mt-1 gap-2">
+                                                            <p className="text-xs sm:text-sm text-gray-500 truncate max-w-[150px] sm:max-w-none">{otherParty}</p>
+                                                            <span className={`px-2 py-0.5 rounded text-[9px] sm:text-[10px] font-bold tracking-wide uppercase ${roleBadgeClass}`}>
                                                                 {myRole === 'buyer' ? 'You: Buyer' : 'You: Seller'}
                                                             </span>
                                                             {tx.status === 'disputed' && (
-                                                                <span className="px-2 py-0.5 rounded text-[10px] font-bold tracking-wide uppercase bg-red-100 text-red-700">
+                                                                <span className="px-2 py-0.5 rounded text-[9px] sm:text-[10px] font-bold tracking-wide uppercase bg-red-100 text-red-700">
                                                                     ⚡ DISPUTED
                                                                 </span>
                                                             )}
                                                         </div>
                                                     </div>
                                                 </div>
-                                                <div className="text-right">
-                                                    <p className="text-lg font-bold text-gray-900">{formatCurrency(parseFloat(tx.amount))}</p>
-                                                    <span className={`inline-flex items-center px-3 py-0.5 rounded-full text-xs font-medium ${style.bg}`}>
+                                                <div className="flex sm:flex-col items-center sm:items-end justify-between sm:justify-center border-t sm:border-none pt-3 sm:pt-0">
+                                                    <p className="text-lg font-black text-gray-900">{formatCurrency(parseFloat(tx.amount))}</p>
+                                                    <span className={`inline-flex items-center px-3 py-1 rounded-full text-[10px] sm:text-xs font-bold uppercase tracking-wider ${style.bg}`}>
                                                         {style.text}
                                                     </span>
                                                 </div>
