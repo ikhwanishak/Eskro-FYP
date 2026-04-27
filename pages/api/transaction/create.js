@@ -19,6 +19,10 @@ export default withIronSessionApiRoute(async function handler(req, res) {
         return res.status(400).json({ error: 'All fields are required' });
     }
 
+    if (!['buyer', 'seller'].includes(role)) {
+        return res.status(400).json({ error: 'Invalid role' });
+    }
+
     if (targetEmail === user.email) {
         return res.status(400).json({ error: 'You cannot transact with yourself' });
     }
@@ -59,13 +63,6 @@ export default withIronSessionApiRoute(async function handler(req, res) {
         res.json(transaction);
     } catch (error) {
         console.error('Transaction Create Error:', error);
-
-        // Write to log file for debugging
-        const fs = require('fs');
-        const path = require('path');
-        const logPath = path.join(process.cwd(), 'public', 'transaction_error.log');
-        fs.writeFileSync(logPath, `Error: ${error.message}\nStack: ${error.stack}\n`);
-
-        res.status(500).json({ error: `Failed to create transaction: ${error.message}` });
+        res.status(500).json({ error: 'Failed to create transaction. Please check your inputs and try again.' });
     }
 }, sessionOptions);

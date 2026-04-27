@@ -66,21 +66,6 @@ export default withIronSessionApiRoute(async function handler(req, res) {
             id: new Uint8Array(credentialID),
         };
 
-        // DEBUG: Log constructed authenticator
-        const fs = require('fs');
-        const path = require('path');
-        const debugLogPath = path.join(process.cwd(), 'public', 'login_verify_debug.log');
-
-        fs.writeFileSync(debugLogPath, JSON.stringify({
-            authenticator: {
-                ...deviceAuthenticator,
-                credentialPublicKey: '[Bytes]',
-                credentialID: '[Bytes]'
-            },
-            body,
-            challenge
-        }, null, 2));
-
         const host = req.headers.host;
         const rpID = host.split(':')[0]; // Remove port if present
         const expectedOrigin = req.headers.origin || `http://${host}`;
@@ -94,12 +79,8 @@ export default withIronSessionApiRoute(async function handler(req, res) {
             credential: deviceAuthenticator, // Alias for safety
         });
     } catch (error) {
-        console.error(error);
-        const fs = require('fs');
-        const path = require('path');
-        const errorLogPath = path.join(process.cwd(), 'public', 'login_verify_error.log');
-        fs.writeFileSync(errorLogPath, `LOGIN_VERIFY_ERROR: ${error.message}\n${error.stack}`);
-        return res.status(400).json({ error: error.message });
+        console.error('LOGIN_VERIFY_ERROR:', error);
+        return res.status(400).json({ error: 'Authentication failed. Please try again.' });
     }
 
     const { verified, authenticationInfo } = verification;

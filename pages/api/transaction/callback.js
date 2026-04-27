@@ -26,14 +26,43 @@ export default async function handler(req, res) {
             return res.status(404).json({ error: 'Transaction not found for this bill' });
         }
 
-        // status_id = 1 is success in ToyyibPay
-        if (status_id === '1' && transaction.status !== 'paid') {
+        // SECURITY FIX: Verify payment status directly with ToyyibPay API
+        // Do not trust the status_id from the request alone!
+        const toyyibpaySecret = process.env.TOYYIBPAY_SECRET_KEY;
+        let isActuallyPaid = false;
+
+        if (status_id === '1') {
+            try {
+                const verifyData = new URLSearchParams();
+                verifyData.append('billCode', billcode);
+                verifyData.append('billpaymentStatus', '1'); // Only check for successful payments
+
+                const verifyRes = await fetch('https://dev.toyyibpay.com/index.php/api/getBillTransactions', {
+                    method: 'POST',
+                    body: verifyData
+                });
+
+                if (verifyRes.ok) {
+                    const transactions = await verifyRes.json();
+                    // If ToyyibPay returns a list containing this billCode and it's successful
+                    if (Array.isArray(transactions) && transactions.length > 0) {
+                        const tpTx = transactions.find(t => t.billCode === billcode && t.billpaymentStatus === '1');
+                        if (tpTx) {
+                            isActuallyPaid = true;
+                        }
+                    }
+                }
+            } catch (vError) {
+                console.error('Payment Verification API Error:', vError);
+            }
+        }
+
+        if (isActuallyPaid && transaction.status !== 'paid') {
             await prisma.transaction.update({
                 where: { id: transaction.id },
                 data: { status: 'paid' },
             });
 
-            // Log event: we use a system identifier or the target email
             const userEmail = transaction.role === 'buyer' ? transaction.creatorEmail : transaction.targetEmail;
             await logEvent(userEmail, 'PAYMENT_SUCCESS', { 
                 transactionId: transaction.id, 

@@ -26,7 +26,7 @@ export default withIronSessionApiRoute(async function handler(req, res) {
             },
         });
 
-        if (attempts >= 100) { // Increased for testing
+        if (attempts >= 5) {
             return res.status(429).json({ error: 'Too many requests. Please try again later.' });
         }
 
@@ -88,6 +88,6 @@ export default withIronSessionApiRoute(async function handler(req, res) {
 
     } catch (error) {
         console.error('SEND_MAGIC_LINK_ERROR:', error);
-        res.status(500).json({ error: 'Internal Server Error: ' + error.message });
+        res.status(500).json({ error: 'Failed to send verification email. Please try again later.' });
     }
 }, sessionOptions);
