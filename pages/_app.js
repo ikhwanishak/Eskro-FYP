@@ -1,10 +1,14 @@
 import "@/styles/globals.css";
 import InactivityTimeout from "../components/InactivityTimeout";
+import Script from "next/script";
 
 export default function App({ Component, pageProps }) {
   return (
-    <InactivityTimeout>
-      <Component {...pageProps} />
-    </InactivityTimeout>
+    <>
+      <Script src="https://cdn.tailwindcss.com" strategy="afterInteractive" />
+      <InactivityTimeout>
+        <Component {...pageProps} />
+      </InactivityTimeout>
+    </>
   );
 }

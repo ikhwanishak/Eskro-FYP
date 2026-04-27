@@ -19,17 +19,6 @@ export default function Dashboard() {
         completedCount: 0
     });
 
-    // Effect khusus untuk memuat Tailwind CSS (Fix untuk masalah layout "pecah")
-    // Menggunakan method injection yang user minta
-    useEffect(() => {
-        if (!document.querySelector('script[src="https://cdn.tailwindcss.com"]')) {
-            const script = document.createElement('script');
-            script.src = "https://cdn.tailwindcss.com";
-            script.async = true;
-            document.head.appendChild(script);
-        }
-    }, []);
-
     // Fetch Real Data (Gantikan Mock Data)
     useEffect(() => {
         if (user) {
@@ -140,8 +129,6 @@ export default function Dashboard() {
                 <title>Dashboard - EscrowSecure</title>
                 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
                 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet" />
-                {/* Fallback if JS injection fails or runs late */}
-                <script src="https://cdn.tailwindcss.com"></script>
             </Head>
 
             {/* Header */}
