@@ -239,22 +239,27 @@ export default function Dashboard() {
                     <h3 className="text-2xl font-bold text-gray-700 mb-6 mt-4 sm:mt-6">Account Overview</h3>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
-                        {/* Stat 1 — Wallet Balance (NEW!) */}
-                        <div className="bg-gradient-to-br from-blue-600 to-indigo-700 p-6 rounded-xl shadow-lg text-white col-span-1">
-                            <div className="flex items-center justify-between mb-3">
-                                <p className="text-sm font-medium text-blue-100">My Wallet</p>
-                                <svg className="w-6 h-6 text-blue-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
-                                </svg>
+                        {/* Wallet Card */}
+                        <div className="bg-gradient-to-br from-indigo-600 to-blue-700 shadow-lg rounded-2xl p-6 text-white relative overflow-hidden group">
+                            <div className="absolute -right-4 -top-4 bg-white/10 w-24 h-24 rounded-full blur-2xl group-hover:bg-white/20 transition-all"></div>
+                            <div className="relative z-10">
+                                <div className="flex items-center justify-between mb-4">
+                                    <span className="text-sm font-medium text-indigo-100 opacity-90">My Wallet</span>
+                                    <div className="p-2 bg-white/20 rounded-lg">
+                                        <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path></svg>
+                                    </div>
+                                </div>
+                                <div className="text-3xl font-extrabold mb-6 tracking-tight">
+                                    {formatCurrency(walletData.balance)}
+                                </div>
+                                <button 
+                                    onClick={() => setShowWithdrawModal(true)}
+                                    className="w-full py-2.5 bg-white text-indigo-600 rounded-xl font-bold text-sm hover:bg-indigo-50 transition-colors shadow-sm flex items-center justify-center gap-2"
+                                >
+                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
+                                    Withdraw Funds
+                                </button>
                             </div>
-                            <p className="text-3xl font-extrabold mb-3">{formatCurrency(walletData.balance)}</p>
-                            <button
-                                onClick={() => setShowWithdrawModal(true)}
-                                disabled={walletData.balance <= 0}
-                                className="w-full bg-white text-blue-700 text-sm font-bold py-2 rounded-lg hover:bg-blue-50 transition disabled:opacity-40 disabled:cursor-not-allowed border-none cursor-pointer"
-                            >
-                                💳 Withdraw
-                            </button>
                         </div>
 
                         {/* Stat 2 — Total Transactions */}
