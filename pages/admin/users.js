@@ -20,35 +20,37 @@ export default function AdminUsers() {
 
     return (
         <Layout title="All Users">
-            <h1 className="text-2xl font-bold mb-6">All Users</h1>
-            <Card>
-                <div className="overflow-x-auto">
-                    <table className="w-full text-left border-collapse">
-                        <thead>
-                            <tr className="border-b">
-                                <th className="p-2">Email</th>
-                                <th className="p-2">Joined</th>
-                                <th className="p-2">Auth Method</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {users.map(u => (
-                                <tr key={u.id} className="border-b hover:bg-gray-50">
-                                    <td className="p-2">{u.email}</td>
-                                    <td className="p-2 text-sm">{new Date(u.createdAt).toLocaleDateString()}</td>
-                                    <td className="p-2">
-                                        {u.passkeyRegistered ? (
-                                            <Badge variant="green">Passkey Active</Badge>
-                                        ) : (
-                                            <Badge variant="gray">No Passkey</Badge>
-                                        )}
-                                    </td>
+            <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
+                <h1 className="text-2xl font-bold mb-6 text-gray-900">All Users</h1>
+                <Card>
+                    <div className="overflow-x-auto">
+                        <table className="w-full text-left border-collapse">
+                            <thead>
+                                <tr className="border-b bg-gray-50 text-xs font-bold text-gray-500 uppercase tracking-wider">
+                                    <th className="p-3">Email</th>
+                                    <th className="p-3">Joined</th>
+                                    <th className="p-3 text-center">Auth Method</th>
                                 </tr>
-                            ))}
-                        </tbody>
-                    </table>
-                </div>
-            </Card>
+                            </thead>
+                            <tbody>
+                                {users.map(u => (
+                                    <tr key={u.id} className="border-b hover:bg-gray-50 transition-colors">
+                                        <td className="p-3 text-sm text-gray-700 font-medium">{u.email}</td>
+                                        <td className="p-3 text-sm text-gray-500">{new Date(u.createdAt).toLocaleDateString()}</td>
+                                        <td className="p-3 text-center">
+                                            {u.passkeyRegistered ? (
+                                                <Badge variant="green">Passkey Active</Badge>
+                                            ) : (
+                                                <Badge variant="gray">No Passkey</Badge>
+                                            )}
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
+                </Card>
+            </div>
         </Layout>
     );
 }

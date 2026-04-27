@@ -63,9 +63,9 @@ export default function AdminTransactions() {
 
     return (
         <Layout title="Manage Transactions — Admin">
-            <div className="w-full max-w-7xl mx-auto px-2">
+            <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
                 <div className="flex items-center justify-between mb-6">
-                    <h1 className="text-2xl font-bold">Manage Transactions</h1>
+                    <h1 className="text-2xl font-bold text-gray-900">Manage Transactions</h1>
                     {disputedCount > 0 && (
                         <span className="bg-red-100 text-red-700 text-sm font-bold px-4 py-1.5 rounded-full flex items-center gap-2">
                             ⚡ {disputedCount} Dispute{disputedCount > 1 ? 's' : ''} Pending Resolution

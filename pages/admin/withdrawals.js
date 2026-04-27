@@ -59,9 +59,9 @@ export default function AdminWithdrawals() {
 
     return (
         <Layout title="Withdrawal Requests — Admin">
-            <div className="w-full max-w-5xl mx-auto px-2">
+            <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
                 <div className="flex items-center justify-between mb-6">
-                    <h1 className="text-2xl font-bold">💳 Withdrawal Requests</h1>
+                    <h1 className="text-2xl font-bold text-gray-900">💳 Withdrawal Requests</h1>
                     {pendingCount > 0 && (
                         <span className="bg-yellow-100 text-yellow-700 text-sm font-bold px-4 py-1.5 rounded-full">
                             ⏳ {pendingCount} Pending Approval

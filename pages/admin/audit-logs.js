@@ -56,7 +56,7 @@ export default function AdminAuditLogs() {
 
     return (
         <Layout title="Audit Logs">
-            <div className="w-full max-w-5xl flex flex-col">
+            <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 flex flex-col">
                 <div className="flex justify-between items-center mb-6">
                     <h1 className="text-2xl font-bold">Tamper-Evident Audit Logs</h1>
                     <Button onClick={handleVerify} isLoading={verifying} variant={verifyStatus?.status === 'TAMPERED' ? 'danger' : 'primary'}>

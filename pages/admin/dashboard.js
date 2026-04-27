@@ -25,7 +25,7 @@ export default function AdminDashboard() {
 
     return (
         <Layout title="Admin Dashboard">
-            <div className="w-full max-w-5xl flex flex-col pb-12">
+            <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 flex flex-col pb-12">
                 <div className="mb-8">
                     <h1 className="text-2xl font-bold text-gray-900">Admin Dashboard</h1>
                     <p className="text-sm text-gray-500 mt-1">System overview and activity monitoring.</p>

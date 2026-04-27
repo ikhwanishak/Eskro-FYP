@@ -19,7 +19,7 @@ export default function AdminSecurity() {
 
     return (
         <Layout title="Security Monitoring">
-            <div className="w-full max-w-5xl flex flex-col">
+            <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 flex flex-col">
                 <h1 className="text-2xl font-bold mb-6 text-red-700">Security Monitoring</h1>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
