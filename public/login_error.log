@@ -1,0 +1,21 @@
+LOGIN_OPT_ERROR: input.replace is not a function
+TypeError: input.replace is not a function
+    at trimPadding (file:///C:/Users/ikhwa/.gemini/antigravity/scratch/escrow-web/node_modules/@simplewebauthn/server/esm/helpers/iso/isoBase64URL.js:71:18)
+    at Module.isBase64URL (file:///C:/Users/ikhwa/.gemini/antigravity/scratch/escrow-web/node_modules/@simplewebauthn/server/esm/helpers/iso/isoBase64URL.js:64:13)
+    at file:///C:/Users/ikhwa/.gemini/antigravity/scratch/escrow-web/node_modules/@simplewebauthn/server/esm/authentication/generateAuthenticationOptions.js:28:31
+    at Array.map (<anonymous>)
+    at generateAuthenticationOptions (file:///C:/Users/ikhwa/.gemini/antigravity/scratch/escrow-web/node_modules/@simplewebauthn/server/esm/authentication/generateAuthenticationOptions.js:27:45)
+    at async handler (C:\Users\ikhwa\.gemini\antigravity\scratch\escrow-web\.next\dev\server\chunks\[root-of-the-server]__47008dca._.js:319:25)
+    at async apiResolver (C:\Users\ikhwa\.gemini\antigravity\scratch\escrow-web\node_modules\next\dist\compiled\next-server\pages-api-turbo.runtime.dev.js:2:4425)
+    at async PagesAPIRouteModule.render (C:\Users\ikhwa\.gemini\antigravity\scratch\escrow-web\node_modules\next\dist\compiled\next-server\pages-api-turbo.runtime.dev.js:2:5955)
+    at async Module.handler (C:\Users\ikhwa\.gemini\antigravity\scratch\escrow-web\.next\dev\server\chunks\f2d35_next_dist_ce0fa371._.js:2935:13)
+    at async DevServer.runApi (C:\Users\ikhwa\.gemini\antigravity\scratch\escrow-web\node_modules\next\dist\server\next-server.js:750:9)
+    at async NextNodeServer.handleCatchallRenderRequest (C:\Users\ikhwa\.gemini\antigravity\scratch\escrow-web\node_modules\next\dist\server\next-server.js:391:37)
+    at async DevServer.handleRequestImpl (C:\Users\ikhwa\.gemini\antigravity\scratch\escrow-web\node_modules\next\dist\server\base-server.js:912:17)
+    at async C:\Users\ikhwa\.gemini\antigravity\scratch\escrow-web\node_modules\next\dist\server\dev\next-dev-server.js:382:20
+    at async Span.traceAsyncFn (C:\Users\ikhwa\.gemini\antigravity\scratch\escrow-web\node_modules\next\dist\trace\trace.js:157:20)
+    at async DevServer.handleRequest (C:\Users\ikhwa\.gemini\antigravity\scratch\escrow-web\node_modules\next\dist\server\dev\next-dev-server.js:378:24)
+    at async invokeRender (C:\Users\ikhwa\.gemini\antigravity\scratch\escrow-web\node_modules\next\dist\server\lib\router-server.js:240:21)
+    at async handleRequest (C:\Users\ikhwa\.gemini\antigravity\scratch\escrow-web\node_modules\next\dist\server\lib\router-server.js:436:24)
+    at async requestHandlerImpl (C:\Users\ikhwa\.gemini\antigravity\scratch\escrow-web\node_modules\next\dist\server\lib\router-server.js:484:13)
+    at async Server.requestListener (C:\Users\ikhwa\.gemini\antigravity\scratch\escrow-web\node_modules\next\dist\server\lib\start-server.js:226:13)

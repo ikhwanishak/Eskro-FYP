@@ -1,0 +1,57 @@
+import prisma from '../../../lib/prisma';
+import { logEvent } from '../../../lib/security';
+
+export default async function handler(req, res) {
+    if (req.method !== 'GET' && req.method !== 'POST') {
+        return res.status(405).json({ error: 'Method not allowed' });
+    }
+
+    // ToyyibPay sends status_id, billcode, order_id, msg, transaction_id
+    // in GET query parameters for Return URL, and POST body for Callback URL.
+    const data = req.method === 'GET' ? req.query : req.body;
+
+    const { status_id, billcode, transaction_id, order_id } = data;
+
+    if (!billcode || !status_id) {
+        return res.status(400).json({ error: 'Missing parameters' });
+    }
+
+    try {
+        const transaction = await prisma.transaction.findFirst({
+            where: { paymentRef: billcode },
+            include: { creator: true }
+        });
+
+        if (!transaction) {
+            return res.status(404).json({ error: 'Transaction not found for this bill' });
+        }
+
+        // status_id = 1 is success in ToyyibPay
+        if (status_id === '1' && transaction.status !== 'paid') {
+            await prisma.transaction.update({
+                where: { id: transaction.id },
+                data: { status: 'paid' },
+            });
+
+            // Log event: we use a system identifier or the target email
+            const userEmail = transaction.role === 'buyer' ? transaction.creatorEmail : transaction.targetEmail;
+            await logEvent(userEmail, 'PAYMENT_SUCCESS', { 
+                transactionId: transaction.id, 
+                amount: transaction.amount, 
+                billCode: billcode,
+                toyyibpayTxId: transaction_id
+            });
+        }
+
+        // If it's a GET request (Return URL), redirect the user back to the transaction page
+        if (req.method === 'GET') {
+            return res.redirect(`/transaction/${transaction.id}`);
+        }
+
+        // If it's a POST request (Callback URL), just acknowledge receipt
+        res.status(200).send('OK');
+    } catch (error) {
+        console.error('Callback error:', error);
+        res.status(500).json({ error: 'Internal server error during callback' });
+    }
+}
