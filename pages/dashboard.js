@@ -212,19 +212,28 @@ export default function Dashboard() {
             )}
 
             {/* Header */}
-            <header className="bg-white shadow-sm border-b">
+            <header className="bg-white shadow-sm border-b sticky top-0 z-30">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
-                    <Link href="/" className="text-xl font-bold text-gray-800 no-underline">
+                    <Link href="/" className="text-xl font-bold text-gray-800 no-underline flex-shrink-0">
                         <span>EscrowSecure</span>
                     </Link>
-                    <nav className="flex items-center space-x-6">
-                        <Link href="/dashboard" className="font-semibold text-blue-600 no-underline">Dashboard</Link>
-                        <Link href="/transaction/create" className="text-gray-600 hover:text-blue-600 transition duration-150 no-underline">New Transaction</Link>
+                    <nav className="flex items-center gap-3 sm:gap-6">
+                        <Link href="/dashboard" className="text-xs sm:text-sm font-bold text-blue-600 no-underline">Dashboard</Link>
+                        <Link href="/transaction/create" className="text-xs sm:text-sm font-semibold text-gray-600 hover:text-blue-600 no-underline">
+                            <span className="hidden sm:inline">New Transaction</span>
+                            <span className="sm:hidden">New</span>
+                        </Link>
                         {user?.isAdmin && (
-                            <Link href="/admin/dashboard" className="text-red-600 hover:text-red-800 font-semibold transition duration-150 no-underline">Admin Panel</Link>
+                            <Link href="/admin/dashboard" className="text-xs sm:text-sm font-bold text-red-600 hover:text-red-800 no-underline">
+                                <span className="hidden sm:inline">Admin Panel</span>
+                                <span className="sm:hidden">Admin</span>
+                            </Link>
                         )}
-                        <span className="text-gray-700 font-medium hidden sm:inline-block">{user?.email}</span>
-                        <button onClick={handleLogout} className="text-blue-600 hover:text-blue-800 font-semibold transition duration-150 bg-transparent border-none cursor-pointer">
+                        <span className="text-gray-400 text-xs font-medium hidden lg:block truncate max-w-[150px]">{user?.email}</span>
+                        <button 
+                            onClick={handleLogout} 
+                            className="text-[10px] sm:text-xs font-bold px-2 py-1 sm:px-3 sm:py-1.5 border border-gray-200 rounded-lg text-gray-600 hover:bg-gray-50 transition bg-transparent cursor-pointer"
+                        >
                             Logout
                         </button>
                     </nav>
