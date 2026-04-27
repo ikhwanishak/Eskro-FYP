@@ -23,13 +23,26 @@ export default function Dashboard() {
     useEffect(() => {
         if (user) {
             fetch('/api/transaction/list')
-                .then((res) => res.json())
+                .then((res) => {
+                    if (!res.ok) {
+                        if (res.status === 401) {
+                            router.push('/login');
+                        }
+                        throw new Error('API Error');
+                    }
+                    return res.json();
+                })
                 .then((data) => {
-                    setTransactions(data);
+                    if (Array.isArray(data)) {
+                        setTransactions(data);
+                    } else {
+                        setTransactions([]);
+                    }
                     setLoading(false);
                 })
                 .catch((err) => {
                     console.error(err);
+                    setTransactions([]);
                     setLoading(false);
                 });
         }
