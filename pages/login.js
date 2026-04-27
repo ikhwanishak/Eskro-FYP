@@ -74,42 +74,44 @@ export default function Login() {
 
     return (
         <Layout title="Login - EscrowSecure">
-            <div className="w-full max-w-lg mx-auto">
-                <Card>
-                    <h1 className="mb-2">Login</h1>
-                    <p className="text-muted mb-8">
-                        Enter your email to login securely using your device's passkey.
-                    </p>
+            <div className="bg-[#f8fafc] min-h-[calc(100vh-140px)] flex items-center justify-center py-12 px-4">
+                <div className="w-full max-w-md">
+                    <Card>
+                        <h1 className="mb-2 text-2xl font-bold text-gray-900 text-center">Login</h1>
+                        <p className="text-muted mb-8 text-center">
+                            Enter your email to login securely using your device's passkey.
+                        </p>
 
-                    <form onSubmit={handleLogin}>
-                        <div className="mb-6">
-                            <Input
-                                label="Email Address"
-                                type="email"
-                                placeholder="you@example.com"
-                                value={email}
-                                onChange={(e) => setEmail(e.target.value)}
-                                required
-                            />
-                        </div>
-
-                        {error && (
-                            <div className="bg-red-50 text-red-600 p-3 rounded-md text-sm mb-4">
-                                {error}
+                        <form onSubmit={handleLogin}>
+                            <div className="mb-6">
+                                <Input
+                                    label="Email Address"
+                                    type="email"
+                                    placeholder="you@example.com"
+                                    value={email}
+                                    onChange={(e) => setEmail(e.target.value)}
+                                    required
+                                />
                             </div>
-                        )}
 
-                        <Button type="submit" className="btn-primary" isLoading={loading}>
-                            Continue with Passkey
-                        </Button>
+                            {error && (
+                                <div className="bg-red-50 text-red-600 p-3 rounded-md text-sm mb-4">
+                                    {error}
+                                </div>
+                            )}
 
-                        <div className="mt-4">
-                            <a href="/recover" className="text-sm hover:underline" style={{ color: 'var(--color-primary)' }}>
-                                Lost your passkey?
-                            </a>
-                        </div>
-                    </form>
-                </Card>
+                            <Button type="submit" className="w-full btn-primary py-3 rounded-xl font-bold" isLoading={loading}>
+                                Continue with Passkey
+                            </Button>
+
+                            <div className="mt-6 text-center">
+                                <a href="/recover" className="text-sm font-medium hover:underline text-indigo-600">
+                                    Lost your passkey?
+                                </a>
+                            </div>
+                        </form>
+                    </Card>
+                </div>
             </div>
         </Layout>
     );

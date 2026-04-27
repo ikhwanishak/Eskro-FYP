@@ -12,7 +12,7 @@ export default function Layout({ children, title = 'EscrowSecure' }) {
 
             <Header />
 
-            <main className="flex-grow container py-8 flex items-center justify-center">
+            <main className="flex-grow flex flex-col">
                 {children}
             </main>
 

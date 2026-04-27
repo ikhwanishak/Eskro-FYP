@@ -90,62 +90,64 @@ export default function Register() {
 
     return (
         <Layout title="Create Account - EscrowSecure">
-            <div className="w-full max-w-lg mx-auto">
-                <Card>
-                    <h1 className="mb-2">Create Account</h1>
+            <div className="bg-[#f8fafc] min-h-[calc(100vh-140px)] flex items-center justify-center py-12 px-4">
+                <div className="w-full max-w-md">
+                    <Card>
+                        <h1 className="mb-2 text-2xl font-bold text-gray-900 text-center">Create Account</h1>
 
-                    {step === 'input_email' && (
-                        <>
-                            <p className="text-muted mb-8">
-                                Enter your email to verify your identity. We'll send you a magic link.
-                            </p>
-                            <form onSubmit={handleSendMagicLink}>
-                                <div className="mb-6">
-                                    <Input
-                                        label="Email Address"
-                                        type="email"
-                                        placeholder="you@example.com"
-                                        value={email}
-                                        onChange={(e) => setEmail(e.target.value)}
-                                        required
-                                    />
-                                </div>
-                                {error && <div className="bg-red-50 text-red-600 p-3 rounded-md text-sm mb-4">{error}</div>}
-                                <Button type="submit" className="btn-primary" isLoading={loading}>
-                                    Verify Email
+                        {step === 'input_email' && (
+                            <>
+                                <p className="text-muted mb-8 text-center">
+                                    Enter your email to verify your identity. We'll send you a magic link.
+                                </p>
+                                <form onSubmit={handleSendMagicLink}>
+                                    <div className="mb-6">
+                                        <Input
+                                            label="Email Address"
+                                            type="email"
+                                            placeholder="you@example.com"
+                                            value={email}
+                                            onChange={(e) => setEmail(e.target.value)}
+                                            required
+                                        />
+                                    </div>
+                                    {error && <div className="bg-red-50 text-red-600 p-3 rounded-md text-sm mb-4">{error}</div>}
+                                    <Button type="submit" className="w-full btn-primary py-3 rounded-xl font-bold" isLoading={loading}>
+                                        Verify Email
+                                    </Button>
+                                </form>
+                            </>
+                        )}
+
+                        {step === 'email_sent' && (
+                            <div className="text-center py-4">
+                                <div className="text-5xl mb-4">✉️</div>
+                                <h3 className="text-xl font-bold mb-2 text-gray-900">Link Sent!</h3>
+                                <p className="text-muted mb-6">
+                                    Please check <strong>{email}</strong> to complete your account creation.
+                                </p>
+                                <Button variant="secondary" className="w-full py-2 rounded-lg font-medium" onClick={() => setStep('input_email')}>
+                                    Use different email
                                 </Button>
-                            </form>
-                        </>
-                    )}
+                            </div>
+                        )}
 
-                    {step === 'email_sent' && (
-                        <div className="text-center py-4">
-                            <div className="text-5xl mb-4">✉️</div>
-                            <h3 className="text-xl font-bold mb-2 text-gray-900">Link Sent!</h3>
-                            <p className="text-muted mb-6">
-                                Please check <strong>{email}</strong> to complete your account creation.
-                            </p>
-                            <Button variant="secondary" className="btn-secondary" onClick={() => setStep('input_email')}>
-                                Use different email
-                            </Button>
-                        </div>
-                    )}
+                        {step === 'ready_to_register' && (
+                            <div className="text-center py-4">
+                                <div className="text-5xl mb-4">✅</div>
+                                <h3 className="text-xl font-bold mb-2 text-gray-900">Email Verified</h3>
+                                <p className="text-muted mb-6">
+                                    You can now create a passkey for <strong>{email}</strong>.
+                                </p>
+                                {error && <div className="bg-red-50 text-red-600 p-3 rounded-md text-sm mb-4">{error}</div>}
+                                <Button className="w-full btn-primary py-3 rounded-xl font-bold" onClick={handleRegister} isLoading={loading}>
+                                    Create Passkey & Register
+                                </Button>
+                            </div>
+                        )}
 
-                    {step === 'ready_to_register' && (
-                        <div className="text-center py-4">
-                            <div className="text-5xl mb-4">✅</div>
-                            <h3 className="text-xl font-bold mb-2 text-gray-900">Email Verified</h3>
-                            <p className="text-muted mb-6">
-                                You can now create a passkey for <strong>{email}</strong>.
-                            </p>
-                            {error && <div className="bg-red-50 text-red-600 p-3 rounded-md text-sm mb-4">{error}</div>}
-                            <Button className="btn-primary" onClick={handleRegister} isLoading={loading}>
-                                Create Passkey & Register
-                            </Button>
-                        </div>
-                    )}
-
-                </Card>
+                    </Card>
+                </div>
             </div>
         </Layout>
     );
