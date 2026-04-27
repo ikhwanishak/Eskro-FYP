@@ -70,6 +70,20 @@ export default function AdminDashboard() {
                             View Security Logs <svg className="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7"></path></svg>
                         </Link>
                     </div>
+
+                    {/* NEW: Withdrawals Card */}
+                    <div className="bg-white border border-gray-200 shadow-sm rounded-xl p-6 hover:shadow-md transition-shadow">
+                        <div className="flex items-center justify-between mb-4">
+                            <h2 className="text-xs font-bold text-gray-500 uppercase tracking-widest">Withdrawals</h2>
+                            <div className="p-2 bg-yellow-50 text-yellow-600 rounded-lg">
+                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path></svg>
+                            </div>
+                        </div>
+                        <div className="text-3xl font-bold text-yellow-600 mb-6">Requests</div>
+                        <Link href="/admin/withdrawals" className="text-sm font-medium text-blue-600 hover:text-blue-800 flex items-center">
+                            Manage Withdrawals <svg className="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7"></path></svg>
+                        </Link>
+                    </div>
                 </div>
 
                 <div className="bg-white border border-gray-200 shadow-sm rounded-xl overflow-hidden">

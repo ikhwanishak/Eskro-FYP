@@ -13,7 +13,7 @@ export default function TransactionDetails() {
 
     const [transaction, setTransaction] = useState(null);
     const [loading, setLoading] = useState(true);
-    const [payLoading, setPayLoading] = useState(false);
+    const [actionLoading, setActionLoading] = useState(false);
     const [error, setError] = useState('');
 
     useEffect(() => {
@@ -36,98 +36,85 @@ export default function TransactionDetails() {
     }, [user, id]);
 
     const handlePay = async () => {
-        setPayLoading(true);
+        setActionLoading(true);
         setError('');
-
         try {
-            // 1. Get fresh challenge for Replay Protection
             const challengeRes = await fetch('/api/auth/challenge');
             const { challenge } = await challengeRes.json();
-
             if (!challenge) throw new Error('Failed to generate security challenge');
 
-            // 2. Send Payment Request
             const res = await fetch('/api/transaction/pay', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    transactionId: transaction.id,
-                    challenge
-                }),
+                body: JSON.stringify({ transactionId: transaction.id, challenge }),
             });
-
             const data = await res.json();
-
             if (res.ok && data.paymentUrl) {
-                // Redirect to ToyyibPay checkout page
                 window.location.href = data.paymentUrl;
             } else {
                 throw new Error(data.error || 'Payment failed');
             }
         } catch (err) {
-            console.error(err);
             setError(err.message);
         } finally {
-            setPayLoading(false);
+            setActionLoading(false);
         }
     };
 
     const handleAction = async (actionType) => {
-        setPayLoading(true); // Reusing this loading state for simplicity
+        setActionLoading(true);
         setError('');
         try {
             const res = await fetch('/api/transaction/action', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    transactionId: transaction.id,
-                    action: actionType
-                }),
+                body: JSON.stringify({ transactionId: transaction.id, action: actionType }),
             });
             const data = await res.json();
             if (!res.ok) throw new Error(data.error || 'Action failed');
-            
-            // Update local state to reflect new status
             setTransaction(data);
         } catch (err) {
-            console.error(err);
             setError(err.message);
         } finally {
-            setPayLoading(false);
+            setActionLoading(false);
         }
     };
 
     if (userLoading || loading) {
         return <Layout><div className="text-center mt-10">Loading...</div></Layout>;
     }
-
     if (error && !transaction) {
         return <Layout><div className="text-center mt-10 text-red-500">{error}</div></Layout>;
     }
 
-    // Determine Role Logic
     const isCreator = user.email === transaction.creatorEmail;
     const isBuyer = (transaction.role === 'buyer' && isCreator) || (transaction.role === 'seller' && !isCreator);
 
-    // Dynamic UI rendering based on status
+    const getBadgeVariant = (status) => {
+        switch (status) {
+            case 'completed': return 'green';
+            case 'paid': return 'blue';
+            case 'disputed': return 'red';
+            case 'refunded': return 'purple';
+            case 'canceled': return 'red';
+            default: return 'yellow';
+        }
+    };
+
     const renderActionSection = () => {
         if (transaction.status === 'pending') {
             return (
                 <div className="space-y-4">
                     {isBuyer && (
-                        <Button
-                            className="w-full btn-accent"
-                            onClick={handlePay}
-                            isLoading={payLoading}
-                        >
+                        <Button className="w-full btn-accent" onClick={handlePay} isLoading={actionLoading}>
                             Pay Now (RM {(transaction.amount + transaction.fee).toFixed(2)})
                         </Button>
                     )}
-                    <Button 
-                        variant="secondary" 
+                    <Button
+                        variant="secondary"
                         className="w-full"
                         onClick={() => handleAction('cancel')}
-                        isLoading={payLoading}
+                        isLoading={actionLoading}
                     >
                         Cancel Transaction
                     </Button>
@@ -138,32 +125,46 @@ export default function TransactionDetails() {
         if (transaction.status === 'paid') {
             if (isBuyer) {
                 return (
-                    <div className="space-y-4 border border-blue-200 bg-blue-50 p-6 rounded-lg">
-                        <p className="text-sm font-semibold text-blue-900 mb-2">
-                            📦 Has the item arrived?
-                        </p>
+                    <div className="space-y-3 border border-blue-200 bg-blue-50 p-6 rounded-lg">
+                        <p className="text-sm font-semibold text-blue-900 mb-1">📦 Has the item arrived?</p>
                         <p className="text-sm text-blue-800 mb-4">
                             Please confirm receipt only when you have received and verified the item. This will release the funds securely to the seller.
                         </p>
                         <Button
                             className="w-full bg-green-600 hover:bg-green-700 text-white border-none"
                             onClick={() => {
-                                if(confirm('Are you sure you want to release the funds? This action cannot be undone.')) {
+                                if (confirm('Are you sure you want to release the funds? This action cannot be undone.')) {
                                     handleAction('release');
                                 }
                             }}
-                            isLoading={payLoading}
+                            isLoading={actionLoading}
                         >
-                            Confirm Receipt & Release Funds
+                            ✅ Confirm Receipt &amp; Release Funds
                         </Button>
+
+                        {/* RAISE DISPUTE BUTTON */}
+                        <div className="border-t border-blue-100 pt-4 mt-2">
+                            <p className="text-xs text-gray-500 mb-2 text-center">
+                                Problem with the item? You can raise a dispute for admin review.
+                            </p>
+                            <button
+                                disabled={actionLoading}
+                                onClick={() => {
+                                    if (confirm('Are you sure you want to raise a dispute? Admin will be notified to investigate and resolve this transaction.')) {
+                                        handleAction('dispute');
+                                    }
+                                }}
+                                className="w-full border-2 border-red-300 text-red-600 bg-red-50 hover:bg-red-100 py-2.5 rounded-lg font-semibold text-sm transition disabled:opacity-50 cursor-pointer"
+                            >
+                                ⚠️ Raise Dispute — Item Not Received / Damaged
+                            </button>
+                        </div>
                     </div>
                 );
             } else {
                 return (
                     <div className="border border-yellow-200 bg-yellow-50 p-6 rounded-lg text-center">
-                        <p className="text-sm font-semibold text-yellow-900 mb-2">
-                            💰 Payment secured in Escrow
-                        </p>
+                        <p className="text-sm font-semibold text-yellow-900 mb-2">💰 Payment secured in Escrow</p>
                         <p className="text-sm text-yellow-800">
                             Please ship or deliver the item. We are waiting for the buyer to confirm receipt before releasing the funds to you.
                         </p>
@@ -172,11 +173,37 @@ export default function TransactionDetails() {
             }
         }
 
+        if (transaction.status === 'disputed') {
+            return (
+                <div className="bg-red-50 border-2 border-red-300 p-6 rounded-lg text-center space-y-3">
+                    <p className="text-2xl">⚡</p>
+                    <p className="font-bold text-red-800 text-lg">Transaction Under Dispute</p>
+                    <p className="text-sm text-red-700">
+                        This transaction has been flagged for review. Our admin team will investigate and resolve this dispute. <strong>Funds are frozen</strong> until a decision is made.
+                    </p>
+                    <div className="bg-red-100 rounded-lg px-4 py-2 text-xs text-red-600 font-medium">
+                        ⏳ Awaiting Admin Resolution
+                    </div>
+                </div>
+            );
+        }
+
+        if (transaction.status === 'refunded') {
+            return (
+                <div className="bg-purple-50 border border-purple-200 p-6 rounded-lg text-center">
+                    <p className="font-bold text-purple-800 text-lg mb-1">↩ Transaction Refunded</p>
+                    <p className="text-sm text-purple-700">
+                        Admin has resolved this dispute in favour of the buyer. The refund amount has been credited to the buyer&#39;s wallet.
+                    </p>
+                </div>
+            );
+        }
+
         if (transaction.status === 'completed') {
             return (
                 <div className="bg-green-50 border border-green-200 p-6 rounded-lg text-center">
                     <p className="font-bold text-green-800 text-lg mb-1">✅ Transaction Complete</p>
-                    <p className="text-sm text-green-700">Funds have been successfully released to the seller.</p>
+                    <p className="text-sm text-green-700">Funds have been successfully released to the seller&#39;s wallet.</p>
                 </div>
             );
         }
@@ -190,11 +217,7 @@ export default function TransactionDetails() {
             );
         }
 
-        return (
-            <div className="text-center text-muted bg-gray-50 p-4 rounded-md">
-                No action required at this moment.
-            </div>
-        );
+        return <div className="text-center text-muted bg-gray-50 p-4 rounded-md">No action required at this moment.</div>;
     };
 
     return (
@@ -218,11 +241,7 @@ export default function TransactionDetails() {
                         </div>
                         <div className="text-right">
                             <label className="label text-sm text-muted">Status</label>
-                            <Badge variant={
-                                transaction.status === 'completed' ? 'green' : 
-                                transaction.status === 'paid' ? 'blue' : 
-                                transaction.status === 'canceled' ? 'red' : 'yellow'
-                            }>
+                            <Badge variant={getBadgeVariant(transaction.status)}>
                                 {transaction.status.toUpperCase()}
                             </Badge>
                         </div>
@@ -234,14 +253,10 @@ export default function TransactionDetails() {
                         </p>
                     </div>
 
-                    {/* Action Section */}
                     <div className="mt-6">
                         {error && (
-                            <div className="bg-red-50 text-red-600 p-3 rounded-md text-sm mb-4">
-                                {error}
-                            </div>
+                            <div className="bg-red-50 text-red-600 p-3 rounded-md text-sm mb-4">{error}</div>
                         )}
-
                         {renderActionSection()}
                     </div>
                 </Card>

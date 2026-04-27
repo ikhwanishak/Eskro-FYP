@@ -6,6 +6,9 @@ export default function Badge({ children, variant = 'gray', className = '' }) {
         green: 'badge-green',
         red: 'badge-red',
         gray: 'bg-gray-100 text-gray-800',
+        blue: 'bg-blue-100 text-blue-800',
+        purple: 'bg-purple-100 text-purple-800',
+        orange: 'bg-orange-100 text-orange-800',
     }[variant] || 'bg-gray-100 text-gray-800';
 
     return (

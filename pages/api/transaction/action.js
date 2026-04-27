@@ -44,12 +44,38 @@ export default withIronSessionApiRoute(async function handler(req, res) {
                 return res.status(403).json({ error: 'Only the buyer can confirm receipt and release funds' });
             }
 
+            const sellerEmail = transaction.role === 'seller' ? transaction.creatorEmail : transaction.targetEmail;
+
+            // Use Prisma transaction to atomically update both transaction status and user balance
+            const [updatedTx, updatedUser] = await prisma.$transaction([
+                prisma.transaction.update({
+                    where: { id: transactionId },
+                    data: { status: 'completed' }
+                }),
+                prisma.user.update({
+                    where: { email: sellerEmail },
+                    data: { balance: { increment: transaction.amount } }
+                })
+            ]);
+
+            await logEvent(user.email, 'FUNDS_RELEASED', { transactionId, amount: updatedTx.amount, sellerEmail });
+            return res.json(updatedTx);
+        }
+
+        if (action === 'dispute') {
+            if (transaction.status !== 'paid') {
+                return res.status(400).json({ error: 'Only paid transactions can be disputed' });
+            }
+            if (!isBuyer) {
+                return res.status(403).json({ error: 'Only the buyer can raise a dispute' });
+            }
+
             const updated = await prisma.transaction.update({
                 where: { id: transactionId },
-                data: { status: 'completed' }
+                data: { status: 'disputed' }
             });
 
-            await logEvent(user.email, 'FUNDS_RELEASED', { transactionId, amount: updated.amount });
+            await logEvent(user.email, 'TRANSACTION_DISPUTED', { transactionId });
             return res.json(updated);
         }
 

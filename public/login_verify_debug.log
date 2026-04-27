@@ -2,7 +2,7 @@
   "authenticator": {
     "credentialPublicKey": "[Bytes]",
     "credentialID": "[Bytes]",
-    "counter": 11,
+    "counter": 12,
     "publicKey": {
       "0": 165,
       "1": 1,
@@ -121,14 +121,14 @@
     "id": "Pi7e8kYEuv028LfNmwxRnEbBifQdB0d-qRDdYxWWoyM",
     "rawId": "Pi7e8kYEuv028LfNmwxRnEbBifQdB0d-qRDdYxWWoyM",
     "response": {
-      "authenticatorData": "SZYN5YgOjGh0NBcPZHZgW4_krrmihjLHmVzzuoMdl2MFAAAADA",
-      "clientDataJSON": "eyJ0eXBlIjoid2ViYXV0aG4uZ2V0IiwiY2hhbGxlbmdlIjoiNjctVWE3d1U2Y3pRbUpibExzM1FjZVptSWIyRklRUmJzbVdXWDFNN20zOCIsIm9yaWdpbiI6Imh0dHA6Ly9sb2NhbGhvc3Q6MzAwMCIsImNyb3NzT3JpZ2luIjpmYWxzZX0",
-      "signature": "MEUCIB9iOrFQJg_dONwp22CxRg9yoWUK4u34Nl6Y96xUkv49AiEA-jFlylfdOU58fwNsYPtbytoB05ASkuxTS2DLncrUKsU",
+      "authenticatorData": "SZYN5YgOjGh0NBcPZHZgW4_krrmihjLHmVzzuoMdl2MFAAAADQ",
+      "clientDataJSON": "eyJ0eXBlIjoid2ViYXV0aG4uZ2V0IiwiY2hhbGxlbmdlIjoiTjVnRWhvaExsdXZWdzJNdUtxMnN5NXFoMHRINm1uWU5meTVxOVNHS0U4TSIsIm9yaWdpbiI6Imh0dHA6Ly9sb2NhbGhvc3Q6MzAwMCIsImNyb3NzT3JpZ2luIjpmYWxzZX0",
+      "signature": "MEQCIFMSL7Ag55wUKizVUwvIH0g3mN723PidP_v0BAhAUFLMAiBiXCMH3EgFJ78vJ4_AeTqzeewBrnBjYasS1xcPIOkemQ",
       "userHandle": "ZAniTQdiS34vBqXDlHCiC7tNQ91SsfzRrLVnqAE7BLQ"
     },
     "type": "public-key",
     "clientExtensionResults": {},
     "authenticatorAttachment": "platform"
   },
-  "challenge": "67-Ua7wU6czQmJblLs3QceZmIb2FIQRbsmWWX1M7m38"
+  "challenge": "N5gEhohLluvVw2MuKq2sy5qh0tH6mnYNfy5q9SGKE8M"
 }
