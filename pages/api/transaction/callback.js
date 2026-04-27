@@ -9,11 +9,18 @@ export default async function handler(req, res) {
     // ToyyibPay sends status_id, billcode, order_id, msg, transaction_id
     // in GET query parameters for Return URL, and POST body for Callback URL.
     const data = req.method === 'GET' ? req.query : req.body;
+    
+    // DEBUG: Log raw data to see what ToyyibPay is sending
+    console.log('ToyyibPay Callback Raw Data:', JSON.stringify(data));
 
-    const { status_id, billcode, transaction_id, order_id } = data;
+    // Handle both billcode and billCode (case-sensitivity fix)
+    const billcode = data.billcode || data.billCode;
+    const status_id = data.status_id || data.statusId;
+    const transaction_id = data.transaction_id || data.transactionId;
 
     if (!billcode || !status_id) {
-        return res.status(400).json({ error: 'Missing parameters' });
+        console.error('Missing parameters from ToyyibPay:', data);
+        return res.status(400).json({ error: 'Missing parameters', received: data });
     }
 
     try {
