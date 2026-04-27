@@ -41,8 +41,9 @@ export default async function handler(req, res) {
         if (status_id === '1') {
             try {
                 const verifyData = new URLSearchParams();
+                verifyData.append('userSecretKey', toyyibpaySecret); // MISSING THIS BEFORE
                 verifyData.append('billCode', billcode);
-                verifyData.append('billpaymentStatus', '1'); // Only check for successful payments
+                // verifyData.append('billpaymentStatus', '1'); // Some sandbox versions don't like this filter
 
                 const verifyRes = await fetch('https://dev.toyyibpay.com/index.php/api/getBillTransactions', {
                     method: 'POST',
@@ -51,9 +52,12 @@ export default async function handler(req, res) {
 
                 if (verifyRes.ok) {
                     const transactions = await verifyRes.json();
+                    console.log('ToyyibPay Verification Response:', JSON.stringify(transactions));
+
                     // If ToyyibPay returns a list containing this billCode and it's successful
                     if (Array.isArray(transactions) && transactions.length > 0) {
-                        const tpTx = transactions.find(t => t.billCode === billcode && t.billpaymentStatus === '1');
+                        // Check if any transaction for this billCode has status '1' (Success)
+                        const tpTx = transactions.find(t => t.billCode === billcode && (t.billpaymentStatus === '1' || t.billpaymentStatus === 1));
                         if (tpTx) {
                             isActuallyPaid = true;
                         }
