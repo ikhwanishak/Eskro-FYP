@@ -299,9 +299,16 @@ a {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: var(--spacing-lg) 0;
-  flex-wrap: wrap;
-  gap: var(--spacing-md);
+  padding: var(--spacing-md) var(--spacing-md);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background-color: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(226, 232, 240, 0.6);
+  margin: 0 calc(var(--spacing-md) * -1) var(--spacing-lg);
+  transition: all 0.3s ease;
 }
 
 .header-actions {
