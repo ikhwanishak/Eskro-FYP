@@ -333,14 +333,19 @@ a {
   }
 
   .header-actions {
-    display: none;
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
   }
 
   .logo {
-    font-size: 1.5rem; /* Revert to original logo size or keep it slightly smaller? User said 'saiz asal' for middle buttons, I'll keep header logo decent */
+    font-size: 1.1rem;
   }
 
-  /* Removed .btn size reduction to keep them at 'saiz asal' */
+  .header-actions .btn {
+    padding: 0.4rem 0.75rem;
+    font-size: 0.75rem;
+  }
 
   .hero-section {
     grid-template-columns: 1fr;
