@@ -326,14 +326,25 @@ a {
 /* Responsive */
 @media (max-width: 768px) {
   .header {
-    justify-content: center;
+    justify-content: space-between;
     padding: var(--spacing-md) 0;
-    text-align: center;
+    flex-wrap: nowrap;
+    gap: var(--spacing-sm);
   }
 
   .header-actions {
-    width: 100%;
-    justify-content: center;
+    width: auto;
+    justify-content: flex-end;
+    gap: 0.5rem;
+  }
+
+  .logo {
+    font-size: 1.2rem;
+  }
+
+  .btn {
+    padding: 0.5rem 1rem;
+    font-size: 0.875rem;
   }
 
   .hero-section {
@@ -362,13 +373,27 @@ a {
 }
 
 @media (max-width: 480px) {
-  .header-actions {
-    flex-direction: column;
-    gap: var(--spacing-sm);
+  .logo span {
+    display: none; /* Hide 'SecureEscrow' text, keep icon if needed? Wait, logo doesn't have span */
   }
   
+  /* Just make the logo text smaller instead */
+  .logo {
+    font-size: 1rem;
+  }
+
+  .header-actions {
+    gap: 0.25rem;
+  }
+
   .header-actions .btn {
-    width: 100%;
+    padding: 0.4rem 0.75rem;
+    font-size: 0.75rem;
+  }
+  
+  /* Hide the login button in header on very small screens to keep it clean */
+  .header-actions a[href="/login"] {
+    display: none;
   }
 }
 
