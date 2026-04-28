@@ -333,19 +333,14 @@ a {
   }
 
   .header-actions {
-    width: auto;
-    justify-content: flex-end;
-    gap: 0.5rem;
+    display: none;
   }
 
   .logo {
-    font-size: 1.2rem;
+    font-size: 1.5rem; /* Revert to original logo size or keep it slightly smaller? User said 'saiz asal' for middle buttons, I'll keep header logo decent */
   }
 
-  .btn {
-    padding: 0.5rem 1rem;
-    font-size: 0.875rem;
-  }
+  /* Removed .btn size reduction to keep them at 'saiz asal' */
 
   .hero-section {
     grid-template-columns: 1fr;
@@ -373,28 +368,7 @@ a {
 }
 
 @media (max-width: 480px) {
-  .logo span {
-    display: none; /* Hide 'SecureEscrow' text, keep icon if needed? Wait, logo doesn't have span */
-  }
-  
-  /* Just make the logo text smaller instead */
-  .logo {
-    font-size: 1rem;
-  }
-
-  .header-actions {
-    gap: 0.25rem;
-  }
-
-  .header-actions .btn {
-    padding: 0.4rem 0.75rem;
-    font-size: 0.75rem;
-  }
-  
-  /* Hide the login button in header on very small screens to keep it clean */
-  .header-actions a[href="/login"] {
-    display: none;
-  }
+  /* No special changes for header-actions here since it is already hidden */
 }
 
 /* Auth Page Utilities */
