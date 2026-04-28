@@ -136,6 +136,7 @@ export default function CreateTransaction() {
                                                     id="amount"
                                                     step="0.01"
                                                     min="1"
+                                                    max="30000"
                                                     required
                                                     value={amount}
                                                     onChange={(e) => setAmount(e.target.value)}
@@ -143,6 +144,7 @@ export default function CreateTransaction() {
                                                     placeholder="0.00"
                                                 />
                                             </div>
+                                            <p className="mt-1.5 text-[10px] text-gray-400 font-medium uppercase tracking-wider">Maximum RM 30,000.00 per transaction</p>
                                         </div>
                                     </div>
 

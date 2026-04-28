@@ -32,6 +32,10 @@ export default withIronSessionApiRoute(async function handler(req, res) {
         return res.status(400).json({ error: 'Amount must be at least RM 1' });
     }
 
+    if (amountFloat > 30000) {
+        return res.status(400).json({ error: 'Maximum transaction amount is RM 30,000' });
+    }
+
     // Calculate Fee (2.5%)
     const fee = amountFloat * 0.025;
 
