@@ -19,7 +19,7 @@ export default function Home() {
             </svg>
             SecureEscrow
           </div>
-          <div style={{ display: 'flex', gap: '1rem' }}>
+          <div className="header-actions">
             <Link href="/login" className="btn btn-outline" style={{ border: 'none' }}>
               Login
             </Link>

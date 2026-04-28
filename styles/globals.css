@@ -300,6 +300,14 @@ a {
   justify-content: space-between;
   align-items: center;
   padding: var(--spacing-lg) 0;
+  flex-wrap: wrap;
+  gap: var(--spacing-md);
+}
+
+.header-actions {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
 }
 
 .logo {
@@ -317,10 +325,22 @@ a {
 
 /* Responsive */
 @media (max-width: 768px) {
+  .header {
+    justify-content: center;
+    padding: var(--spacing-md) 0;
+    text-align: center;
+  }
+
+  .header-actions {
+    width: 100%;
+    justify-content: center;
+  }
+
   .hero-section {
     grid-template-columns: 1fr;
     text-align: center;
     gap: var(--spacing-xl);
+    padding-top: var(--spacing-xl);
   }
 
   .hero-content h1 {
@@ -338,6 +358,17 @@ a {
   .feature-list {
     align-items: center;
     text-align: left;
+  }
+}
+
+@media (max-width: 480px) {
+  .header-actions {
+    flex-direction: column;
+    gap: var(--spacing-sm);
+  }
+  
+  .header-actions .btn {
+    width: 100%;
   }
 }
 
