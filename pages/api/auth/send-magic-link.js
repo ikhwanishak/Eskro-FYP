@@ -1,4 +1,4 @@
-import nodemailer from 'nodemailer';
+// import nodemailer from 'nodemailer';
 import { withIronSessionApiRoute } from 'iron-session/next';
 import { sessionOptions } from '../../../lib/auth';
 import prisma from '../../../lib/prisma';
@@ -49,14 +49,9 @@ export default withIronSessionApiRoute(async function handler(req, res) {
             },
         });
 
-        // 5. Send Email via Nodemailer
-        const transporter = nodemailer.createTransport({
-            service: 'gmail',
-            auth: {
-                user: process.env.EMAIL_USER,
-                pass: process.env.EMAIL_PASS.replace(/ /g, ''), // Remove spaces from app password
-            },
-        });
+        // 5. Send Email via Resend
+        const { Resend } = require('resend');
+        const resendClient = new Resend(process.env.RESEND_API_KEY);
 
         const host = req.headers.host;
         const protocol = req.headers['x-forwarded-proto'] || 'http';
@@ -66,8 +61,8 @@ export default withIronSessionApiRoute(async function handler(req, res) {
             verificationLink += `&next=${encodeURIComponent(next)}`;
         }
 
-        await transporter.sendMail({
-            from: `"EscrowSecure" <${process.env.EMAIL_USER}>`,
+        const { error: emailError } = await resendClient.emails.send({
+            from: 'EscrowSecure <onboarding@resend.dev>',
             to: email,
             subject: 'Verify your email for EscrowSecure',
             html: `
@@ -80,6 +75,11 @@ export default withIronSessionApiRoute(async function handler(req, res) {
                 </div>
             `,
         });
+
+        if (emailError) {
+            console.error('RESEND_ERROR:', emailError);
+            throw new Error('Failed to send verification email via Resend');
+        }
 
         // 6. Log Event
         await logEvent(email, 'MAGIC_LINK_SENT', { attempts: attempts + 1 });
