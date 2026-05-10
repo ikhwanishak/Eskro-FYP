@@ -49,9 +49,14 @@ export default withIronSessionApiRoute(async function handler(req, res) {
             },
         });
 
-        // 5. Send Email via Resend
-        const { Resend } = require('resend');
-        const resendClient = new Resend(process.env.RESEND_API_KEY);
+        // 5. Send Email via Nodemailer
+        const transporter = require('nodemailer').createTransport({
+            service: 'gmail',
+            auth: {
+                user: process.env.EMAIL_USER,
+                pass: process.env.EMAIL_PASS.replace(/ /g, ''), // Remove spaces from app password
+            },
+        });
 
         const host = req.headers.host;
         const protocol = req.headers['x-forwarded-proto'] || 'http';
@@ -61,8 +66,8 @@ export default withIronSessionApiRoute(async function handler(req, res) {
             verificationLink += `&next=${encodeURIComponent(next)}`;
         }
 
-        const { error: emailError } = await resendClient.emails.send({
-            from: 'EscrowSecure <onboarding@resend.dev>',
+        await transporter.sendMail({
+            from: `"EscrowSecure" <${process.env.EMAIL_USER}>`,
             to: email,
             subject: 'Verify your email for EscrowSecure',
             html: `
@@ -76,10 +81,6 @@ export default withIronSessionApiRoute(async function handler(req, res) {
             `,
         });
 
-        if (emailError) {
-            console.error('RESEND_ERROR:', emailError);
-            throw new Error('Failed to send verification email via Resend');
-        }
 
         // 6. Log Event
         await logEvent(email, 'MAGIC_LINK_SENT', { attempts: attempts + 1 });
