@@ -49,15 +49,7 @@ export default withIronSessionApiRoute(async function handler(req, res) {
             },
         });
 
-        // 5. Send Email via Nodemailer
-        const transporter = require('nodemailer').createTransport({
-            service: 'gmail',
-            auth: {
-                user: process.env.EMAIL_USER,
-                pass: process.env.EMAIL_PASS.replace(/ /g, ''), // Remove spaces from app password
-            },
-        });
-
+        // 5. Send Email via Brevo HTTP API
         const host = req.headers.host;
         const protocol = req.headers['x-forwarded-proto'] || 'http';
         const baseUrl = `${protocol}://${host}`;
@@ -66,21 +58,36 @@ export default withIronSessionApiRoute(async function handler(req, res) {
             verificationLink += `&next=${encodeURIComponent(next)}`;
         }
 
-        await transporter.sendMail({
-            from: `"EscrowSecure" <${process.env.EMAIL_USER}>`,
-            to: email,
-            subject: 'Verify your email for EscrowSecure',
-            html: `
-                <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto;">
-                    <h2>Verify your email</h2>
-                    <p>Click the link below to verify your email address and continue setting up your passkey.</p>
-                    <a href="${verificationLink}" style="display: inline-block; background-color: #0070f3; color: white; padding: 12px 24px; text-decoration: none; border-radius: 5px; font-weight: bold;">Verify Email</a>
-                    <p style="margin-top: 20px; color: #666; font-size: 12px;">This link will expire in 5 minutes.</p>
-                    <p style="color: #666; font-size: 12px;">If you didn't request this, please ignore this email.</p>
-                </div>
-            `,
+        const htmlContent = `
+            <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto;">
+                <h2>Verify your email</h2>
+                <p>Click the link below to verify your email address and continue setting up your passkey.</p>
+                <a href="${verificationLink}" style="display: inline-block; background-color: #0070f3; color: white; padding: 12px 24px; text-decoration: none; border-radius: 5px; font-weight: bold;">Verify Email</a>
+                <p style="margin-top: 20px; color: #666; font-size: 12px;">This link will expire in 5 minutes.</p>
+                <p style="color: #666; font-size: 12px;">If you didn't request this, please ignore this email.</p>
+            </div>
+        `;
+
+        const brevoResponse = await fetch('https://api.brevo.com/v3/smtp/email', {
+            method: 'POST',
+            headers: {
+                'accept': 'application/json',
+                'api-key': process.env.BREVO_API_KEY,
+                'content-type': 'application/json'
+            },
+            body: JSON.stringify({
+                sender: { email: process.env.EMAIL_USER, name: 'EscrowSecure' },
+                to: [{ email: email }],
+                subject: 'Verify your email for EscrowSecure',
+                htmlContent: htmlContent
+            })
         });
 
+        if (!brevoResponse.ok) {
+            const errData = await brevoResponse.json();
+            console.error('BREVO_ERROR:', errData);
+            throw new Error('Failed to send verification email via Brevo');
+        }
 
         // 6. Log Event
         await logEvent(email, 'MAGIC_LINK_SENT', { attempts: attempts + 1 });
