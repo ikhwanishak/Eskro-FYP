@@ -2,6 +2,7 @@ import { withIronSessionApiRoute } from 'iron-session/next';
 import { sessionOptions } from '../../../lib/auth';
 import prisma from '../../../lib/prisma';
 import { logEvent } from '../../../lib/security';
+import { encrypt } from '../../../lib/encryption';
 
 export default withIronSessionApiRoute(async function handler(req, res) {
     if (req.method !== 'POST') {
@@ -45,8 +46,8 @@ export default withIronSessionApiRoute(async function handler(req, res) {
             prisma.withdrawal.create({
                 data: {
                     amount: withdrawAmount,
-                    bankName: bankName.trim(),
-                    accountNumber: accountNumber.trim(),
+                    bankName: encrypt(bankName.trim()),
+                    accountNumber: encrypt(accountNumber.trim()),
                     userId: dbUser.id,
                     status: 'pending'
                 }

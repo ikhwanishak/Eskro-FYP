@@ -1,6 +1,7 @@
 import { withIronSessionApiRoute } from 'iron-session/next';
 import { sessionOptions } from '../../../lib/auth';
 import prisma from '../../../lib/prisma';
+import { decryptTransaction } from '../../../lib/encryption';
 
 export default withIronSessionApiRoute(async function handler(req, res) {
     const { user } = req.session;
@@ -20,7 +21,7 @@ export default withIronSessionApiRoute(async function handler(req, res) {
             orderBy: { createdAt: 'desc' },
         });
 
-        res.json(transactions);
+        res.json(transactions.map(decryptTransaction));
     } catch (error) {
         console.error(error);
         res.status(500).json({ error: 'Failed to fetch transactions' });

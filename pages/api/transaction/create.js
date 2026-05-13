@@ -2,6 +2,7 @@ import { withIronSessionApiRoute } from 'iron-session/next';
 import { sessionOptions } from '../../../lib/auth';
 import prisma from '../../../lib/prisma';
 import { logEvent } from '../../../lib/security';
+import { encrypt } from '../../../lib/encryption';
 
 export default withIronSessionApiRoute(async function handler(req, res) {
     const { user } = req.session;
@@ -49,7 +50,7 @@ export default withIronSessionApiRoute(async function handler(req, res) {
     try {
         const transaction = await prisma.transaction.create({
             data: {
-                item: sanitizedItem,
+                item: encrypt(sanitizedItem),
                 amount: amountFloat,
                 fee,
                 role, // Role of the creator (buyer or seller)

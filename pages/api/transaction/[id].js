@@ -2,6 +2,7 @@ import { withIronSessionApiRoute } from 'iron-session/next';
 import { sessionOptions } from '../../../lib/auth';
 import prisma from '../../../lib/prisma';
 import { logEvent } from '../../../lib/security';
+import { decryptTransaction } from '../../../lib/encryption';
 
 export default withIronSessionApiRoute(async function handler(req, res) {
     const { user } = req.session;
@@ -33,7 +34,7 @@ export default withIronSessionApiRoute(async function handler(req, res) {
         // But for strict compliance, let's log it.
         await logEvent(user.email, 'VIEW_TRANSACTION', { transactionId: id });
 
-        res.json(transaction);
+        res.json(decryptTransaction(transaction));
     } catch (error) {
         console.error(error);
         res.status(500).json({ error: 'Failed to fetch transaction' });

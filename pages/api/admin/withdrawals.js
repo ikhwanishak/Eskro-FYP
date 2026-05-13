@@ -1,6 +1,7 @@
 import { withIronSessionApiRoute } from 'iron-session/next';
 import { sessionOptions, isAdmin } from '../../../lib/auth';
 import prisma from '../../../lib/prisma';
+import { decryptWithdrawal } from '../../../lib/encryption';
 
 export default withIronSessionApiRoute(async function handler(req, res) {
     const { user } = req.session;
@@ -23,7 +24,7 @@ export default withIronSessionApiRoute(async function handler(req, res) {
             }
         });
 
-        res.json(withdrawals);
+        res.json(withdrawals.map(decryptWithdrawal));
     } catch (error) {
         console.error('[Admin Withdrawals Error]', error);
         res.status(500).json({ error: 'Failed to fetch withdrawals' });
