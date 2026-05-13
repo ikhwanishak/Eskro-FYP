@@ -3,6 +3,7 @@ import { sessionOptions } from '../../../lib/auth';
 import prisma from '../../../lib/prisma';
 import { logEvent } from '../../../lib/security';
 import { encrypt } from '../../../lib/encryption';
+import { validateNonce } from '../../../lib/validateNonce';
 
 export default withIronSessionApiRoute(async function handler(req, res) {
     if (req.method !== 'POST') {
@@ -14,7 +15,13 @@ export default withIronSessionApiRoute(async function handler(req, res) {
         return res.status(401).json({ error: 'Unauthorized' });
     }
 
-    const { amount, bankName, accountNumber } = req.body;
+    const { amount, bankName, accountNumber, nonce } = req.body;
+
+    // Replay Attack Protection
+    const nonceCheck = await validateNonce(nonce, user.id, '/api/user/withdraw', user.email, req);
+    if (!nonceCheck.valid) {
+        return res.status(nonceCheck.status).json({ error: nonceCheck.message });
+    }
 
     if (!amount || !bankName || !accountNumber) {
         return res.status(400).json({ error: 'Amount, bank name, and account number are required' });

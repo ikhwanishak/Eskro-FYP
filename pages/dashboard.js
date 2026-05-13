@@ -105,13 +105,20 @@ export default function Dashboard() {
         setWithdrawError('');
         setWithdrawSuccess('');
         try {
+            // Step 1: Get single-use nonce (Replay Attack Protection)
+            const nonceRes = await fetch('/api/user/withdraw-nonce', { method: 'POST' });
+            if (!nonceRes.ok) throw new Error('Failed to get security token. Please try again.');
+            const { nonce } = await nonceRes.json();
+
+            // Step 2: Submit withdrawal with nonce
             const res = await fetch('/api/user/withdraw', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     amount: parseFloat(withdrawForm.amount),
                     bankName: withdrawForm.bankName,
-                    accountNumber: withdrawForm.accountNumber
+                    accountNumber: withdrawForm.accountNumber,
+                    nonce,
                 })
             });
             const data = await res.json();

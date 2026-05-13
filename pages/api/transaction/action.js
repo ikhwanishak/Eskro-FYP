@@ -2,6 +2,7 @@ import { withIronSessionApiRoute } from 'iron-session/next';
 import { sessionOptions } from '../../../lib/auth';
 import prisma from '../../../lib/prisma';
 import { logEvent } from '../../../lib/security';
+import { validateNonce } from '../../../lib/validateNonce';
 
 export default withIronSessionApiRoute(async function handler(req, res) {
     if (req.method !== 'POST') {
@@ -13,9 +14,15 @@ export default withIronSessionApiRoute(async function handler(req, res) {
         return res.status(401).json({ error: 'Unauthorized' });
     }
 
-    const { transactionId, action } = req.body;
+    const { transactionId, action, nonce } = req.body;
     if (!transactionId || !action) {
         return res.status(400).json({ error: 'Missing parameters' });
+    }
+
+    // Replay Attack Protection
+    const nonceCheck = await validateNonce(nonce, user.id, '/api/transaction/action', user.email, req);
+    if (!nonceCheck.valid) {
+        return res.status(nonceCheck.status).json({ error: nonceCheck.message });
     }
 
     try {

@@ -65,10 +65,16 @@ export default function TransactionDetails() {
         setActionLoading(true);
         setError('');
         try {
+            // Step 1: Get single-use nonce (Replay Attack Protection)
+            const nonceRes = await fetch('/api/transaction/action-nonce', { method: 'POST' });
+            if (!nonceRes.ok) throw new Error('Failed to get security token. Please try again.');
+            const { nonce } = await nonceRes.json();
+
+            // Step 2: Submit action with nonce
             const res = await fetch('/api/transaction/action', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ transactionId: transaction.id, action: actionType }),
+                body: JSON.stringify({ transactionId: transaction.id, action: actionType, nonce }),
             });
             const data = await res.json();
             if (!res.ok) throw new Error(data.error || 'Action failed');
