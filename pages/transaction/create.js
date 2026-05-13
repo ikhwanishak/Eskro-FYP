@@ -33,6 +33,12 @@ export default function CreateTransaction() {
         }
 
         try {
+            // Step 1: Get a single-use nonce from server (Replay Attack Protection)
+            const nonceRes = await fetch('/api/transaction/nonce', { method: 'POST' });
+            if (!nonceRes.ok) throw new Error('Failed to get security token. Please try again.');
+            const { nonce } = await nonceRes.json();
+
+            // Step 2: Submit transaction with nonce
             const res = await fetch('/api/transaction/create', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -40,7 +46,8 @@ export default function CreateTransaction() {
                     role,
                     item,
                     amount,
-                    targetEmail
+                    targetEmail,
+                    nonce, // Single-use nonce for replay attack prevention
                 }),
             });
 

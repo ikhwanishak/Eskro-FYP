@@ -11,7 +11,61 @@ export default withIronSessionApiRoute(async function handler(req, res) {
         return res.status(401).json({ error: 'Unauthorized' });
     }
 
-    const { item, amount, role, targetEmail } = req.body;
+    // ============================================================
+    // REPLAY ATTACK PROTECTION — Nonce Validation
+    // ============================================================
+    const { item, amount, role, targetEmail, nonce } = req.body;
+
+    // 1. Nonce WAJIB ada dalam setiap request
+    if (!nonce) {
+        await logEvent(user.email, 'REPLAY_ATTACK', {
+            reason: 'Missing nonce in transaction request',
+            endpoint: '/api/transaction/create',
+            ip: req.headers['x-forwarded-for'] || req.socket.remoteAddress,
+        });
+        return res.status(400).json({ error: 'Missing request nonce. Possible replay attack detected.' });
+    }
+
+    // 2. Cari nonce dalam database
+    const nonceRecord = await prisma.requestNonce.findUnique({ where: { nonce } });
+
+    // 3. Reject jika nonce tak wujud (forged request)
+    if (!nonceRecord) {
+        await logEvent(user.email, 'REPLAY_ATTACK', {
+            reason: 'Invalid or forged nonce',
+            nonce,
+            endpoint: '/api/transaction/create',
+            ip: req.headers['x-forwarded-for'] || req.socket.remoteAddress,
+        });
+        return res.status(403).json({ error: 'Invalid nonce. Request rejected.' });
+    }
+
+    // 4. Reject jika nonce sudah tamat tempoh
+    if (new Date() > new Date(nonceRecord.expiresAt)) {
+        await prisma.requestNonce.delete({ where: { nonce } });
+        await logEvent(user.email, 'REPLAY_ATTACK', {
+            reason: 'Expired nonce reused (replay attack)',
+            nonce,
+            endpoint: '/api/transaction/create',
+            ip: req.headers['x-forwarded-for'] || req.socket.remoteAddress,
+        });
+        return res.status(403).json({ error: 'Nonce expired. Possible replay attack detected.' });
+    }
+
+    // 5. Reject jika nonce bukan milik user ini
+    if (nonceRecord.userId !== user.id) {
+        await logEvent(user.email, 'REPLAY_ATTACK', {
+            reason: 'Nonce belongs to different user (session hijack attempt)',
+            nonce,
+            endpoint: '/api/transaction/create',
+            ip: req.headers['x-forwarded-for'] || req.socket.remoteAddress,
+        });
+        return res.status(403).json({ error: 'Nonce mismatch. Request rejected.' });
+    }
+
+    // 6. ✅ Nonce sah — PADAM SERTA-MERTA supaya tak boleh digunakan semula
+    await prisma.requestNonce.delete({ where: { nonce } });
+    // ============================================================
 
     // Validation & Basic Sanitization (Cybersecurity: Prevent XSS)
     const sanitizedItem = item ? item.replace(/</g, "&lt;").replace(/>/g, "&gt;") : '';
@@ -53,12 +107,11 @@ export default withIronSessionApiRoute(async function handler(req, res) {
                 item: encrypt(sanitizedItem),
                 amount: amountFloat,
                 fee,
-                role, // Role of the creator (buyer or seller)
+                role,
                 creatorEmail: user.email,
                 targetEmail,
                 status: 'pending',
-                creatorId: user.id
-                // meta field removed as it is not in schema
+                creatorId: user.id,
             },
         });
 

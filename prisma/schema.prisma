@@ -90,3 +90,12 @@ model VerificationToken {
 
   @@index([identifier])
 }
+
+model RequestNonce {
+  id        String   @id @default(cuid())
+  nonce     String   @unique
+  userId    String
+  endpoint  String
+  usedAt    DateTime @default(now())
+  expiresAt DateTime
+}
